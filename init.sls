@@ -126,6 +126,8 @@ deluged-enable-remote:
     - unless: deluge-console config allow_remote | grep -q True
     - require:
       - service: deluged
+    - listen_in:
+      - service: deluged
 
 # user config
 {% if salt['pillar.get']('deluged:creds:user') %}
