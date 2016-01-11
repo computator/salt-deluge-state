@@ -115,6 +115,8 @@ deluged-creds-root-config:
     - require:
       - pkg: deluged
       - file: deluged-creds-root
+    - require_in:
+      - pkg: deluge-console
 
 # config
 
