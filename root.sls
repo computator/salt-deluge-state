@@ -26,11 +26,11 @@ deluge-torrent-dir-downloading:
       - file: deluge-torrent-root
     - require_in:
       - service: deluged
-  cmd.wait:
+  cmd.run:
     - name: deluge-console config --set download_location {{ defaults.torrent_root }}/downloading | sed '/successfully updated/,$!{$q1}'
+    - unless: deluge-console config download_location | grep -Fq {{ defaults.torrent_root }}/downloading
     - require:
       - service: deluged
-    - watch:
       - file: deluge-torrent-dir-downloading
 
 deluge-torrent-dir-completed:
@@ -44,11 +44,11 @@ deluge-torrent-dir-completed:
       - file: deluge-torrent-root
     - require_in:
       - service: deluged
-  cmd.wait:
+  cmd.run:
     - name: deluge-console config --set move_completed_path {{ defaults.torrent_root }}/completed | sed '/successfully updated/,$!{$q1}'
+    - unless: deluge-console config move_completed_path | grep -Fq {{ defaults.torrent_root }}/completed
     - require:
       - service: deluged
-    - watch:
       - file: deluge-torrent-dir-completed
 
 deluge-move-completed-setting:
