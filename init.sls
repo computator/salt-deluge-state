@@ -92,6 +92,8 @@ deluge-console:
   pkg.installed:
     - require:
       - pkgrepo: deluge-ppa
+    - require_in:
+      - service: deluged
 
 # local creds
 {% set local_pass = salt['grains.get_or_set_hash']('deluge:localclient:hash', 40, '0123456789abcdef') %}
