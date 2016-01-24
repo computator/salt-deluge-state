@@ -17,13 +17,13 @@ state('deluge-plugin-files') \
 
 plugins = [path.rsplit('/', 1)[1].split('-', 1)[0] for path in __salt__['cp.list_master'](prefix='deluge/plugins') if path.endswith('.egg')]
 
-state('deluge-enable-plugins') \
-  .cmd.wait(
-    names=["deluge-console plugin --enable {0} | sed '/successfully updated/,$!{{$q1}}'".format(plugin) for plugin in plugins]
-  ) \
-    .require(
-      service='deluged'
+for plugin in plugins:
+  state('deluge-enable-plugin-{0}'.format(plugin.lower())) \
+    .cmd.run(
+      name="deluge-console plugin --enable {0} | sed '/successfully updated/,$!{{$q1}}'".format(plugin),
+      unless="deluge-console plugin --show | grep -Fq {0}".format(plugin)
     ) \
-    .watch(
-      file='deluge-plugin-files'
-    )
+      .require(
+        service='deluged',
+        file='deluge-plugin-files'
+      )
