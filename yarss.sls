@@ -34,7 +34,28 @@ deluge-yarss-config:
     - require:
       - user: debian-deluged
       - pkg: deluged
+      - file: deluge-torrent-dir-queue
     - require_in:
       - file: deluge-enable-plugin-yarss2
     - watch_in:
       - service: deluged
+
+deluge-yarss-copy-script:
+  file.managed:
+    - name: /var/lib/deluged/copy-torrents.sh
+    - source: salt://deluge/copy-torrents.sh
+    - template: jinja
+    - user: debian-deluged
+    - group: debian-deluged
+    - mode: 755
+    - require:
+      - user: debian-deluged
+      - pkg: deluged
+      - file: deluge-torrent-dir-queue
+
+deluge-yarss-link-script:
+  file.symlink:
+    - name: /usr/local/bin/copy-torrents
+    - target: /var/lib/deluged/copy-torrents.sh
+    - require:
+      - file: deluge-yarss-copy-script
