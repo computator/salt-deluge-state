@@ -14,7 +14,7 @@ torrent_match=(
 		{%- if pattern.regex|default() %}
 			['{{ name }}']='{{ pattern.regex + ext_pattern }}'
 		{%- else %}
-			['{{ name }}']='{{ r.script_prefix|default('') + (pattern.match if pattern.match|default() else pattern) + r.suffix|default('.*S\\d{2}E\\d{2}.*(?:720|1080)p') + ext_pattern }}'
+			['{{ name }}']='{{ r.script_prefix|default('') + (pattern.match if pattern.match|default() else (pattern if pattern else name))|replace(' ', '.') + r.suffix|default('.*S\\d{2}E\\d{2}.*(?:720|1080)p') + ext_pattern }}'
 		{%- endif -%}
 	{%- endfor %}
 )
