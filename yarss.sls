@@ -38,7 +38,7 @@ deluge-yarss-config:
     - require_in:
       - file: deluge-enable-plugin-yarss2
     - watch_in:
-      - service: deluged
+      - service: deluged-service
 
 deluge-yarss-copy-script:
   file.managed:

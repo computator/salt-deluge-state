@@ -4,8 +4,9 @@ deluge-ppa:
     - ppa: deluge-team/ppa
 
 # daemon
-deluged:
+deluged-service:
   pkg.installed:
+    - name: deluged
     - require:
       - pkgrepo: deluge-ppa
   service.running:
@@ -14,7 +15,7 @@ deluged:
     - init_delay: 2
 
 # add service related things if they are missing
-deluged-service:
+deluged-service-script:
   file.managed:
     - name: /etc/init.d/deluged
     - source: salt://deluge/deluged_service
@@ -32,7 +33,7 @@ deluged-service-config:
     - mode: 644
     - replace: false
     - require:
-      - file: deluged-service
+      - file: deluged-service-script
     - watch_in:
       - service: deluged
 
@@ -43,7 +44,7 @@ deluged-logrotate:
     - mode: 644
     - replace: false
     - require:
-      - file: deluged-service
+      - file: deluged-service-script
 
 deluged-user:
   user.present:
