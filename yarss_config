@@ -1,0 +1,67 @@
+{% import_yaml 'deluge/defaults.yaml' as defaults -%}
+{% import_yaml salt['pillar.get']('deluge:yarss:subscription_file', 'deluge/yarss_subscriptions.yaml') as subscriptions -%}
+{% set r = subscriptions.regex|default() -%}
+{
+  "file": 5, 
+  "format": 1
+}{
+  "cookies": {}, 
+  "subscriptions": {
+    {%- for name, pattern in subscriptions.subscriptions.iteritems() %}
+    "{{ loop.index }}": {
+      "last_match": "", 
+      {% if pattern.regex|default() -%}
+      "regex_include": "{{ pattern.regex|default() }}", 
+      {% else -%}
+      "regex_include": "{{ r.prefix|default('^') }}{{ pattern.match if pattern.match|default() else pattern }}{{ r.suffix|default('.S\\\\d{2}E\\\\d{2}.*(?:720|1080)p') }}", 
+      {% endif -%}
+      "max_download_speed": -2, 
+      "name": "{{ name }}", 
+      "auto_managed": "Default", 
+      "add_torrents_in_paused_state": "Default", 
+      "regex_include_ignorecase": true, 
+      "prioritize_first_last_pieces": "Default", 
+      "download_location": "{{ defaults.torrent_root }}/downloading", 
+      "custom_text_lines": "", 
+      "regex_exclude": "{{ pattern.exclude|default('') }}", 
+      "max_upload_speed": -2, 
+      "regex_exclude_ignorecase": true, 
+      "max_upload_slots": -2, 
+      "key": "{{ loop.index }}", 
+      "rssfeed_key": "{{ pattern.feed|default(1) }}", 
+      "active": true, 
+      "max_connections": -2, 
+      "email_notifications": {}, 
+      "move_completed": "{{ defaults.torrent_root }}/queue", 
+      "sequential_download": "Default"
+    }{{ '' if loop.last else ', ' }}
+    {%- endfor %}
+  }, 
+  "email_messages": {}, 
+  "rssfeeds": {
+    {%- for feed, args in subscriptions.feeds.iteritems() %}
+    "{{ loop.index }}": {
+      "name": "{{ feed }}", 
+      "url": "{{ args.url if args.url|default() else args }}", 
+      "site": "{{ args.site|default('') }}", 
+      "last_update": "", 
+      "active": true, 
+      "key": "{{ loop.index }}", 
+      "obey_ttl": false, 
+      "update_interval": {{ args.interval|default(10) }}
+    }{{ '' if loop.last else ', ' }}
+    {%- endfor %}
+  }, 
+  "email_configurations": {
+    "default_email_subject": "[YaRSS2]: RSS event ($subscription_title)", 
+    "from_address": "", 
+    "smtp_authentication": false, 
+    "send_email_on_torrent_events": false, 
+    "smtp_port": "", 
+    "smtp_server": "", 
+    "smtp_password": "", 
+    "default_email_message": "Hi\n\nThe following torrents have been added:\n$torrentlist\nRegards", 
+    "smtp_username": "", 
+    "default_email_to_address": ""
+  }
+}
