@@ -15,19 +15,19 @@
     "{{ loop.index }}": {
       "last_match": "", 
       {% if pattern.regex|default() -%}
-      "regex_include": "{{ pattern.regex|default() }}", 
+      "regex_include": {{ pattern.regex|default()|json() }}, 
       {% else -%}
-      "regex_include": "{{ r.prefix|default('^') }}{{ pattern.match if pattern.match|default() else pattern }}{{ r.suffix|default('.S\\\\d{2}E\\\\d{2}.*(?:720|1080)p') }}", 
+      "regex_include": {{ ( r.prefix|default('^') + (pattern.match if pattern.match|default() else pattern) + r.suffix|default('.S\\d{2}E\\d{2}.*(?:720|1080)p') )|json() }}, 
       {% endif -%}
       "max_download_speed": -2, 
-      "name": "{{ name }}", 
+      "name": {{ name|json() }}, 
       "auto_managed": "Default", 
       "add_torrents_in_paused_state": "Default", 
       "regex_include_ignorecase": true, 
       "prioritize_first_last_pieces": "Default", 
       "download_location": "{{ defaults.torrent_root }}/downloading", 
       "custom_text_lines": "", 
-      "regex_exclude": "{{ pattern.exclude|default('') }}", 
+      "regex_exclude": {{ pattern.exclude|default('')|json() }}, 
       "max_upload_speed": -2, 
       "regex_exclude_ignorecase": true, 
       "max_upload_slots": -2, 
@@ -45,9 +45,9 @@
   "rssfeeds": {
     {%- for feed, args in subscriptions.feeds.iteritems() %}
     "{{ loop.index }}": {
-      "name": "{{ feed }}", 
-      "url": "{{ args.url if args.url|default() else args }}", 
-      "site": "{{ args.site|default('') }}", 
+      "name": {{ feed|json() }}, 
+      "url": {{ ( args.url if args.url|default() else args )|json() }}, 
+      "site": {{ args.site|default('')|json() }}, 
       "last_update": "", 
       "active": true, 
       "key": "{{ loop.index }}", 
