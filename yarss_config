@@ -17,7 +17,7 @@
       {% if pattern.regex|default() -%}
       "regex_include": {{ pattern.regex|default()|json() }}, 
       {% else -%}
-      "regex_include": {{ ( r.prefix|default('^') + (pattern.match if pattern.match|default() else pattern) + r.suffix|default('.S\\d{2}E\\d{2}.*(?:720|1080)p') )|json() }}, 
+      "regex_include": {{ ( r.prefix|default('^') + (pattern.match if pattern.match|default() else pattern) + r.suffix|default('.*S\\d{2}E\\d{2}.*(?:720|1080)p') )|json() }}, 
       {% endif -%}
       "max_download_speed": -2, 
       "name": {{ name|json() }}, 
