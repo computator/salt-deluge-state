@@ -1,5 +1,9 @@
 {% import_yaml 'deluge/defaults.yaml' as defaults -%}
-{% import_yaml salt['pillar.get']('deluge:yarss:subscription_file', 'deluge/yarss_subscriptions.yaml') as subscriptions -%}
+{% set subscription_file = salt['pillar.get']('deluge:yarss:subscription_file') -%}
+{% if subscription_file -%}
+{% import_yaml salt['pillar.get']('deluge:yarss:subscription_file') as subscriptions -%}
+{% endif -%}
+{% set subscriptions = salt['pillar.get']('deluge:yarss:subscriptions', subscriptions, merge=true) -%}
 {% set r = subscriptions.regex|default() -%}
 {
   "file": 5, 
@@ -7,7 +11,7 @@
 }{
   "cookies": {}, 
   "subscriptions": {
-    {%- for name, pattern in subscriptions.subscriptions.iteritems() %}
+    {%- for name, pattern in subscriptions.patterns.iteritems() %}
     "{{ loop.index }}": {
       "last_match": "", 
       {% if pattern.regex|default() -%}
