@@ -24,6 +24,7 @@ do
 	src=$(find '{{ defaults.torrent_root }}/queue' -type f | grep -iP "${torrent_match[$torrent]}")
 	if [[ "$src" ]]
 	then
+		[ -d "{{ subscriptions.copy_target }}/$torrent/" ] || mkdir "{{ subscriptions.copy_target }}/$torrent/"
 		echo "$src" | xargs -d '\n' cp -nvt "{{ subscriptions.copy_target }}/$torrent/"
 	fi
 done
