@@ -12,7 +12,7 @@ state('deluge-plugin-files') \
       user='debian-deluged'
     ) \
     .require_in(
-      service='deluged'
+      service='deluged-service'
     )
 
 plugins = [path.rsplit('/', 1)[1].split('-', 1)[0] for path in __salt__['cp.list_master'](prefix='deluge/plugins') if path.endswith('.egg')]
@@ -24,6 +24,6 @@ for plugin in plugins:
       unless="deluge-console plugin --show | grep -Fq {0}".format(plugin)
     ) \
       .require(
-        service='deluged',
+        service='deluged-service',
         file='deluge-plugin-files'
       )
