@@ -15,7 +15,7 @@ deluge-torrent-dir-queue:
       - user: debian-deluged
       - file: deluge-torrent-root
     - require_in:
-      - service: deluged
+      - service: deluged-service
 
 deluged-stop-for-config:
   service.dead:
