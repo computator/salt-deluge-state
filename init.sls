@@ -24,7 +24,7 @@ deluged-service-script:
     - require:
       - pkg: deluged
     - require_in:
-      - service: deluged
+      - service: deluged-service
 
 deluged-service-config:
   file.managed:
@@ -35,7 +35,7 @@ deluged-service-config:
     - require:
       - file: deluged-service-script
     - watch_in:
-      - service: deluged
+      - service: deluged-service
 
 deluged-logrotate:
   file.managed:
@@ -56,7 +56,7 @@ deluged-user:
     - require:
       - pkg: deluged
     - require_in:
-      - service: deluged
+      - service: deluged-service
 
 deluged-dir-home:
   file.directory:
@@ -74,7 +74,7 @@ deluged-dir-config:
       - file: deluged-dir-home
       - user: deluged-user
     - require_in:
-      - service: deluged
+      - service: deluged-service
 
 deluged-dir-log:
   file.directory:
@@ -86,7 +86,7 @@ deluged-dir-log:
       - pkg: deluged
       - user: deluged-user
     - require_in:
-      - service: deluged
+      - service: deluged-service
 
 # CLI
 deluge-console:
@@ -94,7 +94,7 @@ deluge-console:
     - require:
       - pkgrepo: deluge-ppa
     - require_in:
-      - service: deluged
+      - service: deluged-service
 
 # local creds
 {% set local_pass = salt['grains.get_or_set_hash']('deluge:localclient:hash', 40, '0123456789abcdef') %}
@@ -106,7 +106,7 @@ deluged-creds-root:
     - require:
       - pkg: deluged
     - watch_in:
-      - service: deluged
+      - service: deluged-service
 
 deluged-creds-root-config:
   file.append:
@@ -126,9 +126,9 @@ deluged-enable-remote:
     - name: deluge-console config --set allow_remote true | sed '/successfully updated/,$!{$q1}'
     - unless: deluge-console config allow_remote | grep -q True
     - require:
-      - service: deluged
+      - service: deluged-service
     - listen_in:
-      - service: deluged
+      - service: deluged-service
 
 # user config
 {% if salt['pillar.get']('deluged:creds:user') %}
@@ -139,5 +139,5 @@ deluged-creds-user:
     - require:
       - pkg: deluged
     - watch_in:
-      - service: deluged
+      - service: deluged-service
 {% endif %}
