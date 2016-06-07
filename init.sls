@@ -37,6 +37,15 @@ deluged-service-config:
     - watch_in:
       - service: deluged-service
 
+deluged-service-enable:
+  file.append:
+    - name: /etc/default/deluged
+    - text: ENABLE_DELUGED=1
+    - require:
+      - file: deluged-service-config
+    - watch_in:
+      - service: deluged-service
+
 deluged-logrotate:
   file.managed:
     - name: /etc/logrotate.d/deluged
