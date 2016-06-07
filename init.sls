@@ -38,9 +38,11 @@ deluged-service-config:
       - service: deluged-service
 
 deluged-service-enable:
-  file.append:
+  file.replace:
     - name: /etc/default/deluged
-    - text: ENABLE_DELUGED=1
+    - pattern: ^ENABLE_DELUGED=.*
+    - repl: ENABLE_DELUGED=1
+    - append_if_not_found: true
     - require:
       - file: deluged-service-config
     - watch_in:
