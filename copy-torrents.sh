@@ -25,6 +25,6 @@ do
 	if [[ "$src" ]]
 	then
 		[ -d "{{ subscriptions.copy_target }}/$torrent/" ] || mkdir "{{ subscriptions.copy_target }}/$torrent/"
-		echo "$src" | xargs -d '\n' cp -nvt "{{ subscriptions.copy_target }}/$torrent/"
+		echo "$src" | xargs -d '\n' cp -uvt "{{ subscriptions.copy_target }}/$torrent/"
 	fi
 done
