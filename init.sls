@@ -48,6 +48,17 @@ deluged-service-enable:
     - watch_in:
       - service: deluged-service
 
+deluged-service-umask:
+  file.replace:
+    - name: /etc/default/deluged
+    - pattern: ^MASK=.*
+    - repl: MASK=0022
+    - append_if_not_found: true
+    - require:
+      - file: deluged-service-config
+    - watch_in:
+      - service: deluged-service
+
 deluged-logrotate:
   file.managed:
     - name: /etc/logrotate.d/deluged
@@ -140,6 +151,17 @@ deluged-enable-remote:
       - service: deluged-service
     - listen_in:
       - service: deluged-service
+
+{% if salt['pillar.get']('deluged:settings') %}
+deluged-custom-settings:
+  cmd.wait:
+    - names:
+      {% for setting, val in salt['pillar.get']('deluged:settings').items() %}
+      - deluge-console config --set {{ setting }} {{ val }} | sed '/successfully updated/,$!{$q1}'
+      {% endfor %}
+    - require:
+      - service: deluged-service
+{% endif %}
 
 # user config
 {% if salt['pillar.get']('deluged:creds:user') %}
