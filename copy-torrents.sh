@@ -3,7 +3,7 @@
 {% if subscription_file -%}
 {% import_yaml salt['pillar.get']('deluge:yarss:subscription_file') as subscriptions -%}
 {% endif -%}
-{% set subscriptions = salt['pillar.get']('deluge:yarss:subscriptions', subscriptions, merge=true) -%}
+{% set subscriptions = salt['pillar.get']('deluge:yarss:subscriptions', subscriptions|default({}), merge=true) -%}
 {% set r = subscriptions.regex|default() -%}
 {% set ext_pattern = '[^/]*\\.(?:' + subscriptions.file_ext_pattern|default('mkv|mp4|avi') + ')' -%}
 #!/bin/bash
