@@ -56,7 +56,7 @@ if(DELUGE_EXISTS):
 # end of helpers
 
 def __virtual__():
-	return True if DELUGE_EXISTS else False
+	return True if DELUGE_EXISTS else (False, "The deluge_yarss module cannot be loaded: deluge is not installed.")
 
 def get_subscriptions(**connection_args):
 	'''
