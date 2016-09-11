@@ -26,6 +26,15 @@ deluged-service-script:
     - require_in:
       - service: deluged-service
 
+deluged-systemd-reload:
+  module.wait:
+    - name: service.systemctl_reload
+    - watch:
+      - pkg: deluged-service
+      - file: deluged-service-script
+    - require_in:
+      - service: deluged-service
+
 deluged-service-config:
   file.managed:
     - name: /etc/default/deluged
