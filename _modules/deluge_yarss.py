@@ -90,3 +90,15 @@ def get_subscriptions(**connection_args):
 		return config['subscriptions']
 	except Exception as e:
 		raise CommandExecutionError('Error calling deluge: {0}'.format(get_error_message(e)))
+
+def get_feeds(**connection_args):
+	'''
+	Gets a list of existing rss feeds
+	'''
+	try:
+		with _Connection(**{k[11:]: v for k, v in connection_args.iteritems() if k.startswith('connection_')}):
+			_check_yarss()
+			config = _block_on(_reactor_call(client.yarss2.get_config), 120)
+		return config['rssfeeds']
+	except Exception as e:
+		raise CommandExecutionError('Error calling deluge: {0}'.format(get_error_message(e)))
