@@ -1,6 +1,6 @@
 import Queue
 import logging
-from salt.exceptions import CommandExecutionError, get_error_message
+from salt.exceptions import CommandExecutionError
 log = logging.getLogger(__name__)
 
 DELUGE_EXISTS = True
@@ -77,7 +77,7 @@ def is_available(**connection_args):
 		with _Connection(**{k[11:]: v for k, v in connection_args.iteritems() if k.startswith('connection_')}):
 			return _check_yarss(True)
 	except Exception as e:
-		raise CommandExecutionError('Error calling deluge: {0}'.format(get_error_message(e)))
+		raise CommandExecutionError('Error calling deluge: {}: {}'.format(e.__class__.__name__, e))
 
 def get_full_config(**connection_args):
 	'''
@@ -89,7 +89,7 @@ def get_full_config(**connection_args):
 			config = _block_on(_reactor_call(client.yarss2.get_config), 120)
 		return config
 	except Exception as e:
-		raise CommandExecutionError('Error calling deluge: {0}'.format(get_error_message(e)))
+		raise CommandExecutionError('Error calling deluge: {}: {}'.format(e.__class__.__name__, e))
 
 def get_subscriptions(**connection_args):
 	'''
@@ -101,7 +101,7 @@ def get_subscriptions(**connection_args):
 			config = _block_on(_reactor_call(client.yarss2.get_config), 120)
 		return config['subscriptions']
 	except Exception as e:
-		raise CommandExecutionError('Error calling deluge: {0}'.format(get_error_message(e)))
+		raise CommandExecutionError('Error calling deluge: {}: {}'.format(e.__class__.__name__, e))
 
 def get_feeds(**connection_args):
 	'''
@@ -113,4 +113,4 @@ def get_feeds(**connection_args):
 			config = _block_on(_reactor_call(client.yarss2.get_config), 120)
 		return config['rssfeeds']
 	except Exception as e:
-		raise CommandExecutionError('Error calling deluge: {0}'.format(get_error_message(e)))
+		raise CommandExecutionError('Error calling deluge: {}: {}'.format(e.__class__.__name__, e))
