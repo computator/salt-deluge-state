@@ -114,3 +114,51 @@ def get_feeds(**connection_args):
 		return config['rssfeeds']
 	except Exception as e:
 		raise CommandExecutionError('Error calling deluge: {}: {}'.format(e.__class__.__name__, e))
+
+def set_subscription(data, **connection_args):
+	'''
+	Add a new subscription or update an existing subscription
+
+	Updates an existing entry if data['key'] is set
+	'''
+	try:
+		with _Connection(**{k[11:]: v for k, v in connection_args.iteritems() if k.startswith('connection_')}):
+			_check_yarss()
+			config = _block_on(_reactor_call(client.yarss2.save_subscription, subscription_data=data), 120)
+	except Exception as e:
+		raise CommandExecutionError('Error calling deluge: {}: {}'.format(e.__class__.__name__, e))
+
+def set_feed(data, **connection_args):
+	'''
+	Add a new rss feed or update an existing rss feed
+
+	Updates an existing entry if data['key'] is set
+	'''
+	try:
+		with _Connection(**{k[11:]: v for k, v in connection_args.iteritems() if k.startswith('connection_')}):
+			_check_yarss()
+			config = _block_on(_reactor_call(client.yarss2.save_rssfeed, rssfeed_data=data), 120)
+	except Exception as e:
+		raise CommandExecutionError('Error calling deluge: {}: {}'.format(e.__class__.__name__, e))
+
+def remove_subscription(key, **connection_args):
+	'''
+	Deletes an existing subscription
+	'''
+	try:
+		with _Connection(**{k[11:]: v for k, v in connection_args.iteritems() if k.startswith('connection_')}):
+			_check_yarss()
+			config = _block_on(_reactor_call(client.yarss2.save_subscription, dict_key=str(key), delete=True), 120)
+	except Exception as e:
+		raise CommandExecutionError('Error calling deluge: {}: {}'.format(e.__class__.__name__, e))
+
+def remove_feed(key, **connection_args):
+	'''
+	Deletes an existing rss feed
+	'''
+	try:
+		with _Connection(**{k[11:]: v for k, v in connection_args.iteritems() if k.startswith('connection_')}):
+			_check_yarss()
+			config = _block_on(_reactor_call(client.yarss2.save_rssfeed, dict_key=str(key), delete=True), 120)
+	except Exception as e:
+		raise CommandExecutionError('Error calling deluge: {}: {}'.format(e.__class__.__name__, e))
