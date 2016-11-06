@@ -64,9 +64,8 @@ def get_subscriptions(**connection_args):
 	'''
 	try:
 		with _Connection(**{k[11:]: v for k, v in connection_args.iteritems() if k.startswith('connection_')}):
-			config = _block_on(client.yarss2.get_config())
+			config = _block_on(_reactor_call(client.yarss2.get_config), 120)
 		return config['subscriptions']
 	except Exception as e:
-		print repr(e)
-		log.error('Error calling deluge: {0}'.format(e))
+		log.error('Error calling deluge: {0}'.format(repr(e)))
 		return {}
