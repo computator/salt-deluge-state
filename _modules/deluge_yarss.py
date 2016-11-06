@@ -79,6 +79,18 @@ def is_available(**connection_args):
 	except Exception as e:
 		raise CommandExecutionError('Error calling deluge: {0}'.format(get_error_message(e)))
 
+def get_full_config(**connection_args):
+	'''
+	Gets the full YaRSS2 configuration
+	'''
+	try:
+		with _Connection(**{k[11:]: v for k, v in connection_args.iteritems() if k.startswith('connection_')}):
+			_check_yarss()
+			config = _block_on(_reactor_call(client.yarss2.get_config), 120)
+		return config
+	except Exception as e:
+		raise CommandExecutionError('Error calling deluge: {0}'.format(get_error_message(e)))
+
 def get_subscriptions(**connection_args):
 	'''
 	Gets a list of existing subscriptions
