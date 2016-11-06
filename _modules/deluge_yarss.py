@@ -47,7 +47,7 @@ class _Connection:
 		_block_on(_reactor_call(client.connect, **self._creds))
 
 	def __exit__(self, *exception):
-		_reactor_call(client.disconnect)
+		_block_on(_reactor_call(client.disconnect))
 
 if(DELUGE_EXISTS):
 	reactor_thread = Thread(target=reactor.run, args=(False,))
