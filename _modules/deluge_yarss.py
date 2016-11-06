@@ -1,5 +1,6 @@
 import Queue
 import logging
+from salt.exceptions import CommandExecutionError, get_error_message
 log = logging.getLogger(__name__)
 
 DELUGE_EXISTS = True
@@ -67,5 +68,4 @@ def get_subscriptions(**connection_args):
 			config = _block_on(_reactor_call(client.yarss2.get_config), 120)
 		return config['subscriptions']
 	except Exception as e:
-		log.error('Error calling deluge: {0}'.format(repr(e)))
-		return {}
+		raise CommandExecutionError('Error calling deluge: {0}'.format(get_error_message(e)))
