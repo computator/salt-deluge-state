@@ -103,6 +103,20 @@ def get_subscriptions(**connection_args):
 	except Exception as e:
 		raise CommandExecutionError('Error calling deluge: {}: {}'.format(e.__class__.__name__, e))
 
+def get_subscription(name, **connection_args):
+	'''
+	Gets a subscription if it exists
+	'''
+	subscriptions = get_subscriptions(**connection_args)
+	return next((subscriptions[i] for i in subscriptions if subscriptions[i]['name'] == name), None)
+
+def get_subscription_key(name, **connection_args):
+	'''
+	Gets the key for a subscription if it exists
+	'''
+	subscription = get_subscription(name, **connection_args)
+	return subscription['key'] if subscription else None
+
 def get_feeds(**connection_args):
 	'''
 	Gets a list of existing rss feeds
@@ -114,6 +128,20 @@ def get_feeds(**connection_args):
 		return config['rssfeeds']
 	except Exception as e:
 		raise CommandExecutionError('Error calling deluge: {}: {}'.format(e.__class__.__name__, e))
+
+def get_feed(name, **connection_args):
+	'''
+	Gets a rss feed if it exists
+	'''
+	feeds = get_feeds(**connection_args)
+	return next((feeds[i] for i in feeds if feeds[i]['name'] == name), None)
+
+def get_feed_key(name, **connection_args):
+	'''
+	Gets the key for a rss feed if it exists
+	'''
+	feed = get_feed(name, **connection_args)
+	return feed['key'] if feed else None
 
 def set_subscription(data, **connection_args):
 	'''
