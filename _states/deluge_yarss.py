@@ -36,10 +36,7 @@ def subscription(name, regex, feed_id, **kwargs):
 			'rssfeed_key': feed_id,
 		})
 
-	curr_subscrs = __salt__['deluge_yarss.get_subscriptions'](**conn_args)
-	log.trace("Loaded current subscriptions: %s", curr_subscrs)
-
-	curr_subscr = next((curr_subscrs[i] for i in curr_subscrs if curr_subscrs[i]['name'] == name), None)
+	curr_subscr = __salt__['deluge_yarss.get_subscription'](name, **conn_args)
 	if curr_subscr:
 		log.debug("Found matching subscription: %s", curr_subscr)
 	else:
