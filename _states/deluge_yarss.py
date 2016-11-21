@@ -1,3 +1,4 @@
+from salt.exceptions import SaltInvocationError
 import logging
 log = logging.getLogger(__name__)
 
@@ -61,7 +62,7 @@ def feed(name, url, **kwargs):
 	ret.update(comment="RSS feed was " + ("updated" if curr_feed else "added"), changes=changes, result=True)
 	return ret
 
-def subscription(name, regex, feed_id, **kwargs):
+def subscription(name, regex, **kwargs):
 	'''
 	Make sure a subscription exists with the specified values
 
@@ -69,8 +70,12 @@ def subscription(name, regex, feed_id, **kwargs):
 		The subscription title.
 	regex
 		The Regular Expression to match titles against. The regex_include value is set to this.
-	feed_id
-		The id of the RSS feed associated with this subscription. The rssfeed_key value is set to this.
+	feed_key
+	feed_name
+		The key or name of the RSS feed associated with this subscription. At least one of the two
+		values must be specified. The rssfeed_key value is set to the key specified with feed_key if
+		feed_key is set, otherwise the feeds are searched for a feed with a name that matches feed_name
+		and rssfeed_key is set to the corresponding key.
 
 	Options that start with 'connection_' are used to connect to the deluge daemon. All other options override the corresponding subscription value.
 	'''
@@ -87,13 +92,25 @@ def subscription(name, regex, feed_id, **kwargs):
 		if k.startswith('connection_'):
 			conn_args[k] = kwargs.pop(k)
 
-	subscr_state = kwargs
-	if 'key' in subscr_state:
-		del subscr_state['key']
+	if 'feed_key' in kwargs:
+		feed_key = kwargs['feed_key']
+	elif 'feed_name' in kwargs:
+		feed_key = __salt__['deluge_yarss.get_feed_key'](kwargs['feed_name'], **conn_args)
+	else:
+		raise SaltInvocationError("Either 'feed_key' or 'feed_name' must be specified")
+
+	# continue checking if the subscription could potentially be added or updated if we
+	# are in test mode and the feed key doesn't exist, otherwise return an error that the
+	# feed key is invalid
+	if not __opts__['test'] and not feed_key:
+		ret.update(comment="The specified feed key is invalid or could not be found", result=False)
+		return ret
+
+	subscr_state = {k: kwargs[k] for k in kwargs if k not in ['key', 'feed_key', 'feed_name']}
 	subscr_state.update({
 			'name': name,
 			'regex_include': regex,
-			'rssfeed_key': feed_id,
+			'rssfeed_key': feed_key,
 		})
 
 	curr_subscr = __salt__['deluge_yarss.get_subscription'](name, **conn_args)
@@ -101,6 +118,12 @@ def subscription(name, regex, feed_id, **kwargs):
 		log.debug("Found matching subscription: %s", curr_subscr)
 	else:
 		log.debug("No existing subscription found matching '%s'", name)
+
+	# if we are in test mode and the feed key doesn't exist at the moment we
+	# don't know whether the subscription will be added or updated
+	if __opts__['test'] and not feed_key:
+		ret.update(comment="Subscription will be added or updated", result=None)
+		return ret
 
 	if curr_subscr and len(subscr_state) == len(subscr_state.viewitems() & {k: curr_subscr[k] for k in curr_subscr if k != 'key'}.viewitems()):
 		ret.update(comment="Subscription already up to date", result=True)
