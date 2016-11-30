@@ -126,8 +126,10 @@ deluged-dir-log:
 # CLI
 deluge-console:
   pkg.installed:
+    {% if grains['os'] == "Ubuntu" %}
     - require:
       - pkgrepo: deluge-ppa
+    {% endif %}
     - require_in:
       - service: deluged-service
 
