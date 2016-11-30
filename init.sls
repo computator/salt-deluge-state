@@ -168,14 +168,14 @@ deluged-enable-remote:
       - service: deluged-service
 
 {% if salt['pillar.get']('deluged:settings') %}
-deluged-custom-settings:
-  cmd.wait:
-    - names:
-      {% for setting, val in salt['pillar.get']('deluged:settings').items() %}
-      - deluge-console config --set {{ setting }} {{ val }} | sed '/successfully updated/,$!{$q1}'
-      {% endfor %}
+{% for setting, val in salt['pillar.get']('deluged:settings').items() %}
+deluged-custom-setting_{{ setting }}:
+  cmd.run:
+    - name: deluge-console config --set {{ setting }} {{ val }} | sed '/successfully updated/,$!{$q1}'
+    - unless: deluge-console config {{ setting }} | grep -Fq '{{ val }}'
     - require:
       - service: deluged-service
+{% endfor %}
 {% endif %}
 
 # user config
