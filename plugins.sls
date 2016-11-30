@@ -1,4 +1,5 @@
 #!pydsl
+include('deluge')
 
 state('deluge-plugin-files') \
   .file.recurse(
