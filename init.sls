@@ -172,7 +172,7 @@ deluged-enable-remote:
 deluged-custom-setting_{{ setting }}:
   cmd.run:
     - name: deluge-console config --set {{ setting }} {{ val }} | sed '/successfully updated/,$!{$q1}'
-    - unless: deluge-console config {{ setting }} | grep -Fq '{{ val }}'
+    - unless: deluge-console config {{ setting }} | grep -Fqe '{{ val }}'
     - require:
       - service: deluged-service
 {% endfor %}
