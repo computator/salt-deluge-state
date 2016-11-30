@@ -1,14 +1,18 @@
+{% if grains['os'] == "Ubuntu" %}
 # add PPA
 deluge-ppa:
   pkgrepo.managed:
     - ppa: deluge-team/ppa
+{% endif %}
 
 # daemon
 deluged-service:
   pkg.installed:
     - name: deluged
+    {% if grains['os'] == "Ubuntu" %}
     - require:
       - pkgrepo: deluge-ppa
+    {% endif %}
   service.running:
     - name: deluged
     - enable: true
