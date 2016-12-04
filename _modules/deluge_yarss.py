@@ -84,10 +84,14 @@ except ImportError:
 		return config_dict
 
 	def _verify_feed(feed):
-		return get_fresh_rssfeed_config(**feed)
+		new_feed = get_fresh_rssfeed_config()
+		new_feed.update(feed)
+		return new_feed
 
 	def _verify_subscr(subscr):
-		return get_fresh_subscription_config(**subscr)
+		new_subscr = get_fresh_subscription_config()
+		new_subscr.update(subscr)
+		return new_subscr
 
 class BlockingTimeout(RuntimeError): pass
 
