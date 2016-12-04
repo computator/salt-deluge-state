@@ -125,14 +125,22 @@ def subscription(name, regex, **kwargs):
 		ret.update(comment="Subscription will be added or updated", result=None)
 		return ret
 
-	if curr_subscr and len(subscr_state) == len(subscr_state.viewitems() & {k: curr_subscr[k] for k in curr_subscr if k != 'key'}.viewitems()):
-		ret.update(comment="Subscription already up to date", result=True)
-		return ret
+	if curr_subscr:
+		if curr_subscr['email_notifications'] == (subscr_state['email_notifications'] if 'email_notifications' in subscr_state else {}):
+			old_items = {k: curr_subscr[k] for k in curr_subscr if k not in ('key', 'email_notifications')}
+			new_items = {k: subscr_state[k] for k in subscr_state if k != 'email_notifications'}
+			if len(old_items) == len(old_items.viewitems() & new_items.viewitems()):
+				ret.update(comment="Subscription already up to date", result=True)
+				return ret
 
 	if curr_subscr:
 		new_state = curr_subscr.copy()
 		new_state.update(subscr_state)
-		changes = {k: {'old': curr_subscr[k], 'new': v} for k, v in new_state.viewitems() - curr_subscr.viewitems()}
+		old_items = {k: curr_subscr[k] for k in curr_subscr if k != 'email_notifications'}
+		new_items = {k: new_state[k] for k in new_state if k != 'email_notifications'}
+		changes = {k: {'old': old_items[k], 'new': v} for k, v in new_items.viewitems() - old_items.viewitems()}
+		if curr_subscr['email_notifications'] != (new_state['email_notifications'] if 'email_notifications' in new_state else {}):
+			changes['email_notifications'] = {'old': curr_subscr['email_notifications'], 'new': (new_state['email_notifications'] if 'email_notifications' in new_state else {})}
 	else:
 		new_state = subscr_state
 		changes = {k: {'old': None, 'new': v} for k, v in new_state.iteritems()}
