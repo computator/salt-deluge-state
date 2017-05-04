@@ -8,7 +8,7 @@ deluge-torrent-root:
     - name: {{ defaults.torrent_root }}
     - user: debian-deluged
     - group: debian-deluged
-    - mode: 755
+    - mode: 775
     - require:
       - user: debian-deluged
       - file: /var/lib/deluged
@@ -20,7 +20,7 @@ deluge-torrent-dir-downloading:
     - name: {{ defaults.torrent_root }}/downloading
     - user: debian-deluged
     - group: debian-deluged
-    - mode: 755
+    - mode: 775
     - require:
       - user: debian-deluged
       - file: deluge-torrent-root
@@ -38,7 +38,7 @@ deluge-torrent-dir-completed:
     - name: {{ defaults.torrent_root }}/completed
     - user: debian-deluged
     - group: debian-deluged
-    - mode: 755
+    - mode: 775
     - require:
       - user: debian-deluged
       - file: deluge-torrent-root

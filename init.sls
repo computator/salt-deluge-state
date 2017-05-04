@@ -65,7 +65,7 @@ deluged-service-umask:
   file.replace:
     - name: /etc/default/deluged
     - pattern: ^MASK=.*
-    - repl: MASK=0022
+    - repl: MASK=0002
     - append_if_not_found: true
     - require:
       - file: deluged-service-config
