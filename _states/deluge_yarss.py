@@ -102,7 +102,7 @@ def subscription(name, regex, **kwargs):
 	# continue checking if the subscription could potentially be added or updated if we
 	# are in test mode and the feed key doesn't exist, otherwise return an error that the
 	# feed key is invalid
-	if not __opts__['test'] and feed_key is not None:
+	if not __opts__['test'] and feed_key is None:
 		ret.update(comment="The specified feed key is invalid or could not be found", result=False)
 		return ret
 
