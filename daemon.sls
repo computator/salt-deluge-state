@@ -52,7 +52,7 @@ deluged-logrotate:
   file.managed:
     - name: /etc/logrotate.d/deluged
     - contents: |
-        /var/log/deluged/daemon.log {
+        /var/log/deluged/deluged.log {
             weekly
             rotate 8
             compress
