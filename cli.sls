@@ -10,9 +10,11 @@ deluge-console:
 {% set local_pass = salt['grains.get_or_set_hash']('deluge:localclient:hash', 40, '0123456789abcdef') %}
 
 deluged-creds-root:
-  file.append:
+  file.replace:
     - name: /var/lib/deluged/config/auth
-    - text: localclient:{{ local_pass }}:10
+    - pattern: '^localclient:.*'
+    - repl: localclient:{{ local_pass }}:10
+    - append_if_not_found: true
 
 deluged-creds-root-config:
   file.append:
