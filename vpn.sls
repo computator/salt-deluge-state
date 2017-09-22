@@ -1,5 +1,6 @@
 include:
-  - deluge
+  - deluge.daemon
+  - deluge.cli
   - pia
 
 extend:
@@ -13,7 +14,7 @@ deluge-update-address-script:
     - name: on_up
     - filename: /etc/openvpn/pia_manage.sh
     - text: |
-        if /etc/init.d/deluged status > /dev/null; then
+        if systemctl is-active deluged.service > /dev/null; then
           deluge-console "config --set listen_interface $4" &
         fi
     - require_in:
