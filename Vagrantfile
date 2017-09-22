@@ -5,6 +5,7 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.synced_folder ".", "/srv/salt/deluge"
+  config.vm.synced_folder ".test_pillar", "/srv/pillar"
   config.vm.synced_folder "_modules", "/srv/salt/_modules"
   config.vm.synced_folder "_states", "/srv/salt/_states"
 
