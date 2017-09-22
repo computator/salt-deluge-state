@@ -13,7 +13,8 @@ deluge:
   yarss:
     subscriptions:
       copy_target: /tmp
-      feeds: {}
+      feeds:
+        Test: http://localhost/test.rss
       patterns:
         Test1:
         Test2:
