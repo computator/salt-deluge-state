@@ -110,7 +110,7 @@ def subscription(name, regex, **kwargs):
 	subscr_state.update({
 			'name': name,
 			'regex_include': regex,
-			'rssfeed_key': feed_key,
+			'rssfeed_key': str(feed_key),
 		})
 
 	curr_subscr = __salt__['deluge_yarss.get_subscription'](name, **conn_args)

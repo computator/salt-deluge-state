@@ -66,7 +66,7 @@ deluge-yarss-subscriptions_{{ name|replace(' ', '_') }}:
     - regex: {{ ( r.prefix|default('^') + (pattern.match if pattern.match|default() else (pattern if pattern else name))|replace(' ', '.') + r.suffix|default('.*S\\d{2}E\\d{2}.*(?:720|1080)p') ) }}
     {% endif %}
     - regex_exclude: '{{ pattern.exclude|default('') }}'
-    - feed_key: {{ pattern.feed|default(1) }}
+    - feed_key: {{ pattern.feed|default(0) }}
     - download_location: {{ torrent_root }}/downloading
     - move_completed: {{ torrent_root }}/queue
     - require:
