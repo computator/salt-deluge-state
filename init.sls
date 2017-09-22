@@ -6,7 +6,7 @@ deluge-ppa:
 {% endif %}
 
 # daemon
-deluged-service:
+deluged:
   pkg.installed:
     - name: deluged
     {% if grains['os'] == "Ubuntu" %}
@@ -28,7 +28,7 @@ deluged-service-script:
     - require:
       - pkg: deluged
     - require_in:
-      - service: deluged-service
+      - service: deluged
 
 deluged-systemd-reload:
   module.wait:
@@ -48,7 +48,7 @@ deluged-service-config:
     - require:
       - file: deluged-service-script
     - watch_in:
-      - service: deluged-service
+      - service: deluged
 
 deluged-service-enable:
   file.replace:
@@ -59,7 +59,7 @@ deluged-service-enable:
     - require:
       - file: deluged-service-config
     - watch_in:
-      - service: deluged-service
+      - service: deluged
 
 deluged-service-umask:
   file.replace:
@@ -70,7 +70,7 @@ deluged-service-umask:
     - require:
       - file: deluged-service-config
     - watch_in:
-      - service: deluged-service
+      - service: deluged
 
 deluged-logrotate:
   file.managed:
@@ -91,7 +91,7 @@ deluged-user:
     - require:
       - pkg: deluged
     - require_in:
-      - service: deluged-service
+      - service: deluged
 
 deluged-dir-home:
   file.directory:
@@ -109,7 +109,7 @@ deluged-dir-config:
       - file: deluged-dir-home
       - user: deluged-user
     - require_in:
-      - service: deluged-service
+      - service: deluged
 
 deluged-dir-log:
   file.directory:
@@ -121,7 +121,7 @@ deluged-dir-log:
       - pkg: deluged
       - user: deluged-user
     - require_in:
-      - service: deluged-service
+      - service: deluged
 
 # CLI
 deluge-console:
@@ -131,7 +131,7 @@ deluge-console:
       - pkgrepo: deluge-ppa
     {% endif %}
     - require_in:
-      - service: deluged-service
+      - service: deluged
 
 # local creds
 {% set local_pass = salt['grains.get_or_set_hash']('deluge:localclient:hash', 40, '0123456789abcdef') %}
@@ -143,7 +143,7 @@ deluged-creds-root:
     - require:
       - pkg: deluged
     - watch_in:
-      - service: deluged-service
+      - service: deluged
 
 deluged-creds-root-config:
   file.append:
@@ -163,9 +163,9 @@ deluged-enable-remote:
     - name: deluge-console config --set allow_remote true | sed '/successfully updated/,$!{$q1}'
     - unless: deluge-console config allow_remote | grep -q True
     - require:
-      - service: deluged-service
+      - service: deluged
     - listen_in:
-      - service: deluged-service
+      - service: deluged
 
 {% if salt['pillar.get']('deluged:settings') %}
 {% for setting, val in salt['pillar.get']('deluged:settings').items() %}
@@ -174,7 +174,7 @@ deluged-custom-setting_{{ setting }}:
     - name: deluge-console config --set {{ setting }} {{ val }} | sed '/successfully updated/,$!{$q1}'
     - unless: deluge-console config {{ setting }} | grep -Fqe '{{ val }}'
     - require:
-      - service: deluged-service
+      - service: deluged
 {% endfor %}
 {% endif %}
 
@@ -187,5 +187,5 @@ deluged-creds-user:
     - require:
       - pkg: deluged
     - watch_in:
-      - service: deluged-service
+      - service: deluged
 {% endif %}

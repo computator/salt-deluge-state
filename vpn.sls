@@ -3,7 +3,7 @@ include:
   - pia
 
 extend:
-  deluged-service:
+  deluged:
     service:
       - watch:
         - service: openvpn

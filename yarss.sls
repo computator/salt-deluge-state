@@ -15,7 +15,7 @@ deluge-torrent-dir-queue:
       - user: debian-deluged
       - file: deluge-torrent-root
     - require_in:
-      - service: deluged-service
+      - service: deluged
 
 {% import_yaml 'deluge/defaults.yaml' as defaults -%}
 {% set subscription_file = salt['pillar.get']('deluge:yarss:subscription_file') -%}
@@ -34,7 +34,7 @@ deluge-yarss-feeds_{{ feed|replace(' ', '_') }}:
     - update_interval: {{ args.interval|default(10) }}
     - require:
       - file: deluge-torrent-dir-queue
-      - service: deluged-service
+      - service: deluged
 {% endfor %}
 
 {% for name, pattern in subscriptions.patterns.iteritems() %}
@@ -52,7 +52,7 @@ deluge-yarss-subscriptions_{{ name|replace(' ', '_') }}:
     - move_completed: {{ defaults.torrent_root }}/queue
     - require:
       - file: deluge-torrent-dir-queue
-      - service: deluged-service
+      - service: deluged
       {% if pattern.feed|default() %}
       - deluge_yarss: deluge-yarss-feeds_{{ pattern.feed|replace(' ', '_') }}
       {% endif %}
