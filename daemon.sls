@@ -44,7 +44,7 @@ deluged-log-dir:
     - name: /var/log/deluged
     - user: debian-deluged
     - group: adm
-    - mode: 2750
+    - mode: 2755
     - require:
       - user: deluged
 
