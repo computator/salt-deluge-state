@@ -1,23 +1,40 @@
 include:
-  - deluge
+  - deluge.daemon
+  - deluge.cli
   - deluge.plugins
   - deluge.root
 
-{% import_yaml 'deluge/defaults.yaml' as defaults %}
+{% set torrent_root = '/var/lib/deluged/torrents' %}
 
 deluge-torrent-dir-queue:
   file.directory:
-    - name: {{ defaults.torrent_root }}/queue
+    - name: {{ torrent_root }}/queue
     - user: debian-deluged
     - group: debian-deluged
     - mode: 755
     - require:
-      - user: debian-deluged
       - file: deluge-torrent-root
-    - require_in:
-      - service: deluged
 
-{% import_yaml 'deluge/defaults.yaml' as defaults -%}
+deluge-yarss-copy-script:
+  file.managed:
+    - name: /var/lib/deluged/copy-torrents.sh
+    - source: salt://deluge/copy-torrents.sh
+    - template: jinja
+    - user: debian-deluged
+    - group: debian-deluged
+    - mode: 755
+    - require:
+      - user: deluged
+      - file: deluge-torrent-dir-queue
+
+deluge-yarss-link-script:
+  file.symlink:
+    - name: /usr/local/bin/copy-torrents
+    - target: /var/lib/deluged/copy-torrents.sh
+    - require:
+      - file: deluge-yarss-copy-script
+
+# load subscription data
 {% set subscription_file = salt['pillar.get']('deluge:yarss:subscription_file') -%}
 {% if subscription_file -%}
 {% import_yaml salt['pillar.get']('deluge:yarss:subscription_file') as subscriptions -%}
@@ -25,6 +42,7 @@ deluge-torrent-dir-queue:
 {% set subscriptions = salt['pillar.get']('deluge:yarss:subscriptions', subscriptions|default({}), merge=true) -%}
 {% set r = subscriptions.regex|default() -%}
 
+# process feeds
 {% for feed, args in subscriptions.feeds.iteritems() %}
 deluge-yarss-feeds_{{ feed|replace(' ', '_') }}:
   deluge_yarss.feed:
@@ -37,6 +55,7 @@ deluge-yarss-feeds_{{ feed|replace(' ', '_') }}:
       - service: deluged
 {% endfor %}
 
+# process subscriptions
 {% for name, pattern in subscriptions.patterns.iteritems() %}
 deluge-yarss-subscriptions_{{ name|replace(' ', '_') }}:
   deluge_yarss.subscription:
@@ -48,8 +67,8 @@ deluge-yarss-subscriptions_{{ name|replace(' ', '_') }}:
     {% endif %}
     - regex_exclude: '{{ pattern.exclude|default('') }}'
     - feed_key: {{ pattern.feed|default(1) }}
-    - download_location: {{ defaults.torrent_root }}/downloading
-    - move_completed: {{ defaults.torrent_root }}/queue
+    - download_location: {{ torrent_root }}/downloading
+    - move_completed: {{ torrent_root }}/queue
     - require:
       - file: deluge-torrent-dir-queue
       - service: deluged
@@ -57,23 +76,3 @@ deluge-yarss-subscriptions_{{ name|replace(' ', '_') }}:
       - deluge_yarss: deluge-yarss-feeds_{{ pattern.feed|replace(' ', '_') }}
       {% endif %}
 {% endfor %}
-
-deluge-yarss-copy-script:
-  file.managed:
-    - name: /var/lib/deluged/copy-torrents.sh
-    - source: salt://deluge/copy-torrents.sh
-    - template: jinja
-    - user: debian-deluged
-    - group: debian-deluged
-    - mode: 755
-    - require:
-      - user: debian-deluged
-      - pkg: deluged
-      - file: deluge-torrent-dir-queue
-
-deluge-yarss-link-script:
-  file.symlink:
-    - name: /usr/local/bin/copy-torrents
-    - target: /var/lib/deluged/copy-torrents.sh
-    - require:
-      - file: deluge-yarss-copy-script

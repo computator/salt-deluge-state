@@ -1,4 +1,4 @@
-{% import_yaml 'deluge/defaults.yaml' as defaults -%}
+{% set torrent_root = '/var/lib/deluged/torrents' -%}
 {% set subscription_file = salt['pillar.get']('deluge:yarss:subscription_file') -%}
 {% if subscription_file -%}
 {% import_yaml salt['pillar.get']('deluge:yarss:subscription_file') as subscriptions -%}
@@ -21,7 +21,7 @@ torrent_match=(
 
 for torrent in "${!torrent_match[@]}"
 do
-	src=$(find '{{ defaults.torrent_root }}/queue' -type f | grep -iP "${torrent_match[$torrent]}")
+	src=$(find '{{ torrent_root }}/queue' -type f | grep -iP "${torrent_match[$torrent]}")
 	if [[ "$src" ]]
 	then
 		[ -d "{{ subscriptions.copy_target }}/$torrent/" ] || mkdir "{{ subscriptions.copy_target }}/$torrent/"
