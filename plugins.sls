@@ -16,6 +16,7 @@ deluge-plugin-{{loop.index}}:
     - name: /var/lib/deluged/config/plugins/{{ filename }}
     - source: {{url}}
     - skip_verify: true
+    - replace: false # avoids redownloading
     - user: debian-deluged
     - group: debian-deluged
     - mode: 664
