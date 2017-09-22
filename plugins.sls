@@ -23,6 +23,8 @@ deluge-plugin-{{loop.index}}:
     - makedirs: true
     - require:
       - file: deluged-config-dir
+    - watch_in:
+      - service: deluged
   cmd.run:
     - name: deluge-console plugin --enable {{ filename.split('-', 1)[0] }} | sed '/successfully updated/,$!{$q1}'
     - unless: deluge-console plugin --show | grep -Fq {{ filename.split('-', 1)[0] }}
