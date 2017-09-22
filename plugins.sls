@@ -1,30 +1,32 @@
-#!pydsl
-include('deluge')
+include:
+  - deluge.daemon
+  - deluge.cli
 
-state('deluge-plugin-files') \
-  .file.recurse(
-    '/var/lib/deluged/config/plugins',
-    source='salt://deluge/plugins',
-    user='debian-deluged',
-    group='debian-deluged'
-  ) \
-    .require(
-      pkg='deluged',
-      user='debian-deluged'
-    ) \
-    .require_in(
-      service='deluged'
-    )
+{% load_yaml as plugins %}
+  - https://bitbucket.org/bendikro/deluge-yarss-plugin/downloads/YaRSS2-1.4.3-py2.7.egg
+  - https://github.com/downloads/nicklan/Deluge-Pieces-Plugin/Pieces-0.5-py2.7.egg
+  - https://github.com/downloads/ianmartin/Deluge-stats-plugin/Stats-0.3.2-py2.7.egg
+  - https://github.com/rlifshay/salt-deluge-state/raw/master/plugins/TotalTraffic-0.3.2-py2.7.egg
+{% endload %}
 
-plugins = [path.rsplit('/', 1)[1].split('-', 1)[0] for path in __salt__['cp.list_master'](prefix='deluge/plugins') if path.endswith('.egg')]
-
-for plugin in plugins:
-  state('deluge-enable-plugin-{0}'.format(plugin.lower())) \
-    .cmd.run(
-      name="deluge-console plugin --enable {0} | sed '/successfully updated/,$!{{$q1}}'".format(plugin),
-      unless="deluge-console plugin --show | grep -Fq {0}".format(plugin)
-    ) \
-      .require(
-        service='deluged',
-        file='deluge-plugin-files'
-      )
+{% for url in plugins -%}
+{% set filename = url.rsplit('/', 1)[1] %}
+deluge-plugin-{{loop.index}}:
+  file.managed:
+    - name: /var/lib/deluged/config/plugins/{{ filename }}
+    - source: {{url}}
+    - skip_verify: true
+    - user: debian-deluged
+    - group: debian-deluged
+    - mode: 664
+    - makedirs: true
+    - show_changes: false
+    - require:
+      - file: deluged-config-dir
+  cmd.run:
+    - name: deluge-console plugin --enable {{ filename.split('-', 1)[0] }} | sed '/successfully updated/,$!{$q1}'
+    - unless: deluge-console plugin --show | grep -Fq {{ filename.split('-', 1)[0] }}
+    - require:
+      - file: deluge-plugin-{{loop.index}}
+      - service: deluged
+{% endfor %}
