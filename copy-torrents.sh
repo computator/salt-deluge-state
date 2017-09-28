@@ -10,7 +10,7 @@
 declare -A torrent_match
 
 torrent_match=(
-	{%- for name, pattern in subscriptions.patterns.iteritems() %}
+	{%- for name, pattern in subscriptions.patterns|dictsort %}
 		{%- if pattern.regex|default() %}
 			['{{ name }}']='{{ pattern.regex + ext_pattern }}'
 		{%- else %}
