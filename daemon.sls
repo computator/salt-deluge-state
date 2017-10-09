@@ -1,12 +1,11 @@
-deluge-ppa:
-  pkgrepo.managed:
-    - ppa: deluge-team/ppa
-    - require_in:
-      - pkg: deluged
+include:
+  - deluge.ppa
 
 deluged:
   pkg.installed:
     - name: deluged
+    - require:
+      - pkgrepo: deluge-ppa
   file.managed:
     - name: /usr/local/lib/systemd/system/deluged.service
     - source: salt://deluge/deluged.service
