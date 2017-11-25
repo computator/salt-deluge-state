@@ -11,6 +11,8 @@ deluge-setdefault:
     - name: xdg-settings set default-url-scheme-handler magnet deluge.desktop
     - unless: xdg-settings check default-url-scheme-handler magnet deluge.desktop | grep -q yes
     - runas: computator
+    - env:
+      - DESKTOP_SESSION: gnome
     - require:
       - pkg: deluge
 
