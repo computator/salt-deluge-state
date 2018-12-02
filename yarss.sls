@@ -47,8 +47,8 @@ deluge-yarss-link-script:
 deluge-yarss-feeds_{{ feed|replace(' ', '_') }}:
   deluge_yarss.feed:
     - name: {{ feed }}
-    - url: {{ ( args.url if args.url|default() else args ) }}
-    - site: '{{ args.site|default('') }}'
+    - url: {{ (args.url if args.url|default() else args) }}
+    - site: '{{ args.site|default( (args.url if args.url|default() else args)|regex_search('^\w+://(?:[^/@]*@)?([^:/]+)(?::\d+)?/', ignorecase=True) ) }}'
     - update_interval: {{ args.interval|default(10) }}
     - require:
       - file: deluge-torrent-dir-queue
