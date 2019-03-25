@@ -14,7 +14,7 @@ deluged:
       - pkg: deluged
   user.present:
     - name: debian-deluged
-    {% if grains['saltversioninfo'][0] > 2018 %}
+    {% if grains['saltversioninfo'][0] > 2019 or (grains['saltversioninfo'][0] == 2019 and grains['saltversioninfo'][1] > 2) %}
     - usergroup: true
     {% endif %}
     - home: /var/lib/deluged
