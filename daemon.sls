@@ -14,7 +14,9 @@ deluged:
       - pkg: deluged
   user.present:
     - name: debian-deluged
-    - gid_from_name: true
+    {% if grains['saltversioninfo'][0] > 2018 %}
+    - usergroup: true
+    {% endif %}
     - home: /var/lib/deluged
     - system: true
     - require:
