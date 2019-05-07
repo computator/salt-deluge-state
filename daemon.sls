@@ -37,6 +37,9 @@ deluged-config-dir:
     - user: debian-deluged
     - group: debian-deluged
     - mode: 750
+    - recurse:
+      - user
+      - group
     - require:
       - user: deluged
 
