@@ -15,6 +15,8 @@ deluged-creds-root:
     - pattern: '^localclient:.*'
     - repl: localclient:{{ local_pass }}:10
     - append_if_not_found: true
+    - require:
+      - file: deluged-config-dir
     - watch_in:
       - service: deluged
 
