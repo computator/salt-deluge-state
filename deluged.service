@@ -5,6 +5,7 @@ Description=Deluge BitTorrent Daemon
 ExecStart=/usr/bin/deluged -d -c /var/lib/deluged/config -l /var/log/deluged/deluged.log -L info
 User=debian-deluged
 Restart=on-failure
+UMask=0002
 
 [Install]
 WantedBy=multi-user.target
